@@ -1,0 +1,535 @@
+[
+    {
+        "id": "10d88192dfb46dfb",
+        "type": "tab",
+        "label": "SBL Test",
+        "disabled": false,
+        "info": "This part containt the nodes requierd to obtain the data required for the SBL proyect and send to the DataBase",
+        "env": []
+    },
+    {
+        "id": "237e8df94273b95e",
+        "type": "OpcUa-Client",
+        "z": "10d88192dfb46dfb",
+        "endpoint": "70e5eab3ca07fd09",
+        "action": "subscribe",
+        "deadbandtype": "a",
+        "deadbandvalue": 1,
+        "time": "1",
+        "timeUnit": "s",
+        "certificate": "n",
+        "localfile": "",
+        "localkeyfile": "",
+        "securitymode": "None",
+        "securitypolicy": "None",
+        "folderName4PKI": "",
+        "name": "OPC UA SERVER",
+        "x": 590,
+        "y": 280,
+        "wires": [
+            [
+                "342ef5f64f27403a"
+            ]
+        ]
+    },
+    {
+        "id": "22ad4cb92bdde12e",
+        "type": "inject",
+        "z": "10d88192dfb46dfb",
+        "name": "[PLC_W10]Idx_WC",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "ns=3;s=[PLC_W10]Idx_WC",
+        "x": 1270,
+        "y": 600,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8a759412dfad45c3",
+        "type": "debug",
+        "z": "10d88192dfb46dfb",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1170,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "d4cd76a17a431689",
+        "type": "inject",
+        "z": "10d88192dfb46dfb",
+        "name": "[PLC_W10]WC1_Flujo.Hightlimit",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "ns=3;s=[PLC_W10]WC1_Flujo.Hightlimit",
+        "x": 1310,
+        "y": 680,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "342ef5f64f27403a",
+        "type": "function",
+        "z": "10d88192dfb46dfb",
+        "name": "",
+        "func": "// let subscriptionId = msg.topic == \"subscriptionId\" ? msg.payload : \"noid\";\n// global.set(\"subscribeId\", subscriptionId);\n\n// Esta funcion obtiene el tag para ver cual guardar\nlet cutStringTag = (stringTag) => {\n  \n  let firstCut = stringTag.split(\";\");\n  let secondCut = stringTag.split(\"]\");\n  \n  return secondCut[1];\n}\n//END\n\nlet typeTag = cutStringTag(msg.topic);\nlet valueTag = msg.payload;\n\nlet query = \"\";\n\nswitch(typeTag){\n    case \"Idx_WC\":\n        query += \"Insert Idx_WC\";\n        break;\n    case \"Idx_Event\":\n        query += \"Insert Idx_Event\";\n        break;\n    case \"WC1_Flujo.Hightlimit\":\n        query += \"Insert WC1_Flujo.Hightlimit\";\n        break;\n        \n    case \"WC1_Flujo.Value\":\n        query += \"Insert WC1_Flujo.Value\";\n        break;\n}\n\nquery += \" = \" + valueTag;\n\nmsg.payload = query;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 280,
+        "wires": [
+            [
+                "d42dd0f8f894e3ad"
+            ]
+        ]
+    },
+    {
+        "id": "307801c9a5de64c4",
+        "type": "inject",
+        "z": "10d88192dfb46dfb",
+        "name": "[PLC_W10]Idx_Event",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "interval",
+                "v": "5",
+                "vt": "num"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "ns=3;s=[PLC_W10]Idx_Event",
+        "x": 1280,
+        "y": 640,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ec37029c2dd7d7e0",
+        "type": "inject",
+        "z": "10d88192dfb46dfb",
+        "name": "[PLC_W10]WC1_Flujo.Value",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "ns=3;s=[PLC_W10]WC1_Flujo.Value",
+        "x": 1300,
+        "y": 720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "25c710fd44b34b81",
+        "type": "MSSQL",
+        "z": "10d88192dfb46dfb",
+        "mssqlCN": "c348a9ce75afb6ad",
+        "name": "SBL_TEST",
+        "outField": "payload",
+        "returnType": 0,
+        "throwErrors": 1,
+        "query": "",
+        "modeOpt": "queryMode",
+        "modeOptType": "query",
+        "queryOpt": "payload",
+        "queryOptType": "editor",
+        "paramsOpt": "queryParams",
+        "paramsOptType": "none",
+        "rows": "rows",
+        "rowsType": "msg",
+        "params": [],
+        "x": 970,
+        "y": 280,
+        "wires": [
+            [
+                "8a759412dfad45c3"
+            ]
+        ]
+    },
+    {
+        "id": "93a7b7d48069498d",
+        "type": "catch",
+        "z": "10d88192dfb46dfb",
+        "name": "Catch DB",
+        "scope": [
+            "25c710fd44b34b81"
+        ],
+        "uncaught": false,
+        "x": 120,
+        "y": 460,
+        "wires": [
+            [
+                "37bc2690306626cd",
+                "d19292b513593525"
+            ]
+        ]
+    },
+    {
+        "id": "0a836df6ca18f79c",
+        "type": "http response",
+        "z": "10d88192dfb46dfb",
+        "name": "Response error",
+        "statusCode": "500",
+        "headers": {
+            "content-type": "text/plain"
+        },
+        "x": 620,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "37bc2690306626cd",
+        "type": "debug",
+        "z": "10d88192dfb46dfb",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 290,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "d19292b513593525",
+        "type": "function",
+        "z": "10d88192dfb46dfb",
+        "name": "",
+        "func": "\nmsg.paylod = {\n    response: msg.payload\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 460,
+        "wires": [
+            [
+                "0b6a30302e5cd14b"
+            ]
+        ]
+    },
+    {
+        "id": "27c3f3e2e58173cf",
+        "type": "comment",
+        "z": "10d88192dfb46dfb",
+        "name": "Respuesta si ocurre un error en la DB",
+        "info": "",
+        "x": 210,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "0b6a30302e5cd14b",
+        "type": "json",
+        "z": "10d88192dfb46dfb",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 450,
+        "y": 460,
+        "wires": [
+            [
+                "0a836df6ca18f79c"
+            ]
+        ]
+    },
+    {
+        "id": "8fabeca297fbadde",
+        "type": "http in",
+        "z": "10d88192dfb46dfb",
+        "name": "Subscribe Tags",
+        "url": "/sbl_tags/subscribe",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 260,
+        "wires": [
+            [
+                "d228a83315cbeff0",
+                "fdf9b67b35f0e2d4"
+            ]
+        ]
+    },
+    {
+        "id": "d228a83315cbeff0",
+        "type": "function",
+        "z": "10d88192dfb46dfb",
+        "name": "Subscribe Tags",
+        "func": "\nreturn {\n    topic: msg.payload.tag,\n    datatype: msg.payload.type,\n    action: \"subscribe\"\n};",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 260,
+        "wires": [
+            [
+                "237e8df94273b95e"
+            ]
+        ]
+    },
+    {
+        "id": "1bc84c9cfc2a72e1",
+        "type": "catch",
+        "z": "10d88192dfb46dfb",
+        "name": "Chatch OPC",
+        "scope": [
+            "237e8df94273b95e"
+        ],
+        "uncaught": false,
+        "x": 130,
+        "y": 500,
+        "wires": [
+            [
+                "37bc2690306626cd"
+            ]
+        ]
+    },
+    {
+        "id": "755c1facb2d1b08f",
+        "type": "http in",
+        "z": "10d88192dfb46dfb",
+        "name": "Unsubscribe Tags",
+        "url": "/sbl_tags/unsubscribe",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 150,
+        "y": 300,
+        "wires": [
+            [
+                "7ae7e03978035d56",
+                "fdf9b67b35f0e2d4"
+            ]
+        ]
+    },
+    {
+        "id": "7ae7e03978035d56",
+        "type": "function",
+        "z": "10d88192dfb46dfb",
+        "name": "Unsubscribe Tags",
+        "func": "\nreturn {\n    topic: msg.payload.tag,\n    datatype: msg.payload.type,\n    action: \"unsubscribe\",\n    payload: \"\"\n};",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 300,
+        "wires": [
+            [
+                "237e8df94273b95e"
+            ]
+        ]
+    },
+    {
+        "id": "197011a9a1296712",
+        "type": "switch",
+        "z": "10d88192dfb46dfb",
+        "name": "",
+        "property": "action",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "subscribe",
+                "vt": "str"
+            },
+            {
+                "t": "neq",
+                "v": "subscribe",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 730,
+        "y": 700,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "d42dd0f8f894e3ad",
+        "type": "debug",
+        "z": "10d88192dfb46dfb",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 930,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "a37eb199517d45db",
+        "type": "http response",
+        "z": "10d88192dfb46dfb",
+        "name": "Response success",
+        "statusCode": "200",
+        "headers": {
+            "content-type": "text/plain"
+        },
+        "x": 710,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "fdf9b67b35f0e2d4",
+        "type": "function",
+        "z": "10d88192dfb46dfb",
+        "name": "",
+        "func": "\n// msg.payload = {\n//     response: \"Data Saved Successfully\"\n// };\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 200,
+        "wires": [
+            [
+                "16a7325bfdd7876b"
+            ]
+        ]
+    },
+    {
+        "id": "16a7325bfdd7876b",
+        "type": "json",
+        "z": "10d88192dfb46dfb",
+        "name": "",
+        "property": "action",
+        "action": "",
+        "pretty": false,
+        "x": 510,
+        "y": 200,
+        "wires": [
+            [
+                "a37eb199517d45db"
+            ]
+        ]
+    },
+    {
+        "id": "184b165dee86a46b",
+        "type": "http in",
+        "z": "10d88192dfb46dfb",
+        "name": "Actions tags",
+        "url": "/sbl_tags",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 370,
+        "y": 700,
+        "wires": [
+            [
+                "da5ba698788e3c93"
+            ]
+        ]
+    },
+    {
+        "id": "da5ba698788e3c93",
+        "type": "function",
+        "z": "10d88192dfb46dfb",
+        "name": "Subscribe Tags",
+        "func": "\nreturn {\n    topic: msg.payload.tag,\n    datatype: msg.payload.type,\n    action: \"subscribe\"\n};",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 700,
+        "wires": [
+            [
+                "197011a9a1296712"
+            ]
+        ]
+    },
+    {
+        "id": "70e5eab3ca07fd09",
+        "type": "OpcUa-Endpoint",
+        "endpoint": "opc.tcp://DESKTOP-2922AB8:4990/FactoryTalkLinxGateway1",
+        "secpol": "None",
+        "secmode": "None",
+        "none": false,
+        "login": false,
+        "usercert": false,
+        "usercertificate": "",
+        "userprivatekey": ""
+    },
+    {
+        "id": "c348a9ce75afb6ad",
+        "type": "MSSQL-CN",
+        "tdsVersion": "7_4",
+        "name": "SBL_TEST",
+        "server": "localhost",
+        "port": "1433",
+        "encyption": false,
+        "trustServerCertificate": false,
+        "database": "sbl_test",
+        "useUTC": true,
+        "connectTimeout": "15000",
+        "requestTimeout": "15000",
+        "cancelTimeout": "5000",
+        "pool": "5",
+        "parseJSON": false,
+        "enableArithAbort": true
+    }
+]

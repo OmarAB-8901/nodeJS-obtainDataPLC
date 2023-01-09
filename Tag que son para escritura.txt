@@ -1,0 +1,38 @@
+	
+	FIFO_WC_OEE[0].return = 1
+
+	Escritura OEE
+	
+	// el valor en tre los corchetes al final de el tag se refiere a la linea: ejem [1]-Linea 1, [2]-Linea 2, etc...
+	
+	// Type Bool
+	BD_Entradas_OEE.HabSensor[1]
+	BD_Entradas_OEE.Ready[1]
+	BD_Entradas_OEE.Run[1]
+	
+	// Type INT
+	BD_Entradas_OEE.Scrap[1]
+	BD_Entradas_OEE.TotalParts[1]
+	
+	// Type Float (Real) 
+	BD_Entradas_OEE.ICT[1]
+	
+	// Type String(45)
+	BD_Entradas_OEE.loteid[1]
+	BD_Entradas_OEE.parteid[1]
+	
+	
+	
+	TAGS 
+
+	// Bandera
+	linea_entradas_andon[1].sol_lider // [1] - es un arrego que guarda las lineas, [2] es otra linea
+
+	// Tags a leer cuando aterior es 1
+	linea_entradas_andon[1].operador[1] // el primer corchete es para la lienas que va de [1]-[4] y el segundo corchete es para los operadores los cuales son 4 operadores por linea
+	linea_entradas_andon[1].totalsensor
+
+
+	//Contestar a tag
+	linea_entradas_andon[1].return // se escribe 1
+	linea_entradas_andon[1].retro_lider // se escribe el valor enviado desde SBL, ejem "mantenimiento", "calidad", etc...

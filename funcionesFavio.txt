@@ -1,0 +1,76 @@
+async function writeDataTagsOEE() {
+
+  /** 
+   * javascript comment 
+   * @Author: Carlos Omar Anaya Barajas 
+   * @Date: 2022-11-17 12:08:15 
+   * @Desc: Esta informacion se debe de escribir
+   */
+
+  let tags = {
+    tagsSBL: [
+      {tag: "ns=3;s=[PLC_W10]BD_Entradas_OEE.Ready[1]", type: "Bool", value: 0},
+      {tag: "ns=3;s=[PLC_W10]BD_Entradas_OEE.Run[1]", type: "Bool", value: 0},
+      {tag: "ns=3;s=[PLC_W10]BD_Entradas_OEE.TotalParts[1]", type: "Int32", value: 0},
+      {tag: "ns=3;s=[PLC_W10]BD_Entradas_OEE.Scrap[1]", type: "Int32", value: 0},
+      {tag: "ns=3;s=[PLC_W10]BD_Entradas_OEE.ICT[1]", type: "Int32", value: 0},
+      {tag: "ns=3;s=[PLC_W10]BD_Entradas_OEE.HabSensor[1]", type: "Bool", value: 0},
+      {tag: "ns=3;s=[PLC_W10]BD_Entradas_OEE.loteid[1]", type: "String", value: 0},
+      {tag: "ns=3;s=[PLC_W10]BD_Entradas_OEE.parteid[1]", type: "String", value: 0}
+    ]
+  }
+
+  tags = {
+    andon: [
+      {tag: 'ns=3;s=[PLC_W10]linea_entradas_andon[1].sol_lider', type: 'bool', value: 0},
+      {tag: 'ns=3;s=[PLC_W10]linea_entradas_andon[1].totalsensor', type: 'bool', value: 0},
+      {tag: 'ns=3;s=[PLC_W10]linea_entradas_andon[1].retro_lider', type: 'bool', value: 0},
+      {tag: 'ns=3;s=[PLC_W10]linea_entradas_andon[1].Return', type: 'bool', value: 0},
+      {tag: 'ns=3;s=[PLC_W10]linea_entradas_andon[1].operador[1]', type: 'bool', value: 0},
+      {tag: 'ns=3;s=[PLC_W10]linea_entradas_andon[1].operador[2]', type: 'bool', value: 0},
+      {tag: 'ns=3;s=[PLC_W10]linea_entradas_andon[1].operador[3]', type: 'bool', value: 0},
+      {tag: 'ns=3;s=[PLC_W10]linea_entradas_andon[1].operador[4]', type: 'bool', value: 0},
+      {tag: 'ns=3;s=[PLC_W10]linea_entradas_andon[2].sol_lider', type: 'bool', value: 0},
+      {tag: 'ns=3;s=[PLC_W10]linea_entradas_andon[2].totalsensor', type: 'bool', value: 0},
+      {tag: 'ns=3;s=[PLC_W10]linea_entradas_andon[2].retro_lider', type: 'bool', value: 0},
+      {tag: 'ns=3;s=[PLC_W10]linea_entradas_andon[2].Return', type: 'bool', value: 0},
+      {tag: 'ns=3;s=[PLC_W10]linea_entradas_andon[2].operador[1]', type: 'bool', value: 0},
+      {tag: 'ns=3;s=[PLC_W10]linea_entradas_andon[2].operador[2]', type: 'bool', value: 0},
+      {tag: 'ns=3;s=[PLC_W10]linea_entradas_andon[2].operador[3]', type: 'bool', value: 0},
+      {tag: 'ns=3;s=[PLC_W10]linea_entradas_andon[2].operador[4]', type: 'bool', value: 0}
+    ]
+  }
+ 
+  let headers = { 
+    method: 'POST',
+    body: JSON.stringify(tags),
+    headers: {    
+      "content-type": "application/json; charset=utf-8"
+    }
+  };
+
+  await fetch(urlPLC+"sbl_tags/writeTags", headers); 
+}
+
+function sendMessageToTelegram(){
+
+  let messageStructure = {
+    idGroup: 2,
+    idChart: 1,
+    idShift: 1,
+    dbMensaje: false,
+    mensaje: "Mensaje enviado desde una funcion JavaScript"
+  }
+
+  let headers = { 
+    method: 'POST',
+    body: JSON.stringify(messageStructure),
+    headers: {    
+      "content-type": "application/json; charset=utf-8"
+    }
+  };
+
+  fetch("http://127.0.0.1:1880/sbl/sendTelegramMessage", headers);
+}
+
+// sendMessageToTelegram();

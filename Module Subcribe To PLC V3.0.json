@@ -1,0 +1,1012 @@
+[
+    {
+        "id": "ff1c050944a72acc",
+        "type": "tab",
+        "label": "SBL TEST READ",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "1c96861f9acae68f",
+        "type": "http in",
+        "z": "ff1c050944a72acc",
+        "name": "Read Data Tags",
+        "url": "/sbl_tags/readTagData",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 100,
+        "wires": [
+            [
+                "1e2e48b24cf81a03"
+            ]
+        ]
+    },
+    {
+        "id": "d0af80dd60d5fa03",
+        "type": "function",
+        "z": "ff1c050944a72acc",
+        "name": "Read Data Tag",
+        "func": "\nlet tagData = msg.payload.data;\n\nmsg.topic = tagData.tag + `;datatype=${tagData.type}`;\n// msg.datatype = tagData.type;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 100,
+        "wires": [
+            [
+                "b740972afad9c80f"
+            ]
+        ]
+    },
+    {
+        "id": "0b713404ecc9906c",
+        "type": "http response",
+        "z": "ff1c050944a72acc",
+        "name": "Response success",
+        "statusCode": "200",
+        "headers": {
+            "content-type": "text/plain"
+        },
+        "x": 1170,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "eda187174511f1fc",
+        "type": "function",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "func": "\nlet ajaxData = {\n    data: msg.payload\n};\n\nmsg.payload = ajaxData;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 100,
+        "wires": [
+            [
+                "204619b99613d6d0"
+            ]
+        ]
+    },
+    {
+        "id": "204619b99613d6d0",
+        "type": "json",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": false,
+        "x": 990,
+        "y": 100,
+        "wires": [
+            [
+                "0b713404ecc9906c"
+            ]
+        ]
+    },
+    {
+        "id": "869d958163b240c4",
+        "type": "OpcUa-Client",
+        "z": "ff1c050944a72acc",
+        "endpoint": "c4506100afe1f2fb",
+        "action": "subscribe",
+        "deadbandtype": "a",
+        "deadbandvalue": 1,
+        "time": "1",
+        "timeUnit": "s",
+        "certificate": "n",
+        "localfile": "",
+        "localkeyfile": "",
+        "securitymode": "None",
+        "securitypolicy": "None",
+        "folderName4PKI": "",
+        "name": "OPC UA SERVER",
+        "x": 550,
+        "y": 500,
+        "wires": [
+            [
+                "1c860b1abc6de769"
+            ]
+        ]
+    },
+    {
+        "id": "0bea891936837895",
+        "type": "http in",
+        "z": "ff1c050944a72acc",
+        "name": "Save Data Tags",
+        "url": "/sbl_tags/saveTagData",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 220,
+        "wires": [
+            [
+                "04154805fbe55f1a"
+            ]
+        ]
+    },
+    {
+        "id": "04154805fbe55f1a",
+        "type": "function",
+        "z": "ff1c050944a72acc",
+        "name": "generate Querys",
+        "func": "\nlet procecedData = msg.payload.procecedData;\nlet group = msg.payload.group.toLowerCase();\n\nlet query = \"\";\n\nmsg.insertData = procecedData.pop() == 1 ? true : false;\n// msg.insertData = true;\n\nfor(let i=0; i<procecedData.length; i++){\n    if(typeof procecedData[i] == \"string\"){\n        procecedData[i] = \"'\" + procecedData[i] + \"'\";\n    }\n}\n\nif(group === \"oee\"){\n    query = `INSERT INTO oee VALUES(NEWID(), ${procecedData.join(\",\")}); `;\n} else if(group === \"events\"){\n    query = `INSERT INTO events(id, ideventoPLC, idmachine, startTime, endTime, type, descriptions, duration) VALUES(NEWID(), ${procecedData.join(\",\")}); `;\n} else {\n    query = `INSERT INTO trends VALUES(NEWID(), ${procecedData.join(\",\")}); `;\n}\n\nmsg.payload = query;\nmsg.group = group;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 220,
+        "wires": [
+            [
+                "95a03099beab5fd8"
+            ]
+        ]
+    },
+    {
+        "id": "321e3523e681d1d5",
+        "type": "comment",
+        "z": "ff1c050944a72acc",
+        "name": "En esta linea se obtiene la informacion necesaria para el registro de en la base de datos.",
+        "info": "",
+        "x": 350,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "299573a132491239",
+        "type": "comment",
+        "z": "ff1c050944a72acc",
+        "name": "En esta linea se manda la informacion recaba por el proceso anterior a la base de datos",
+        "info": "",
+        "x": 340,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "1f62266c3ca1651f",
+        "type": "comment",
+        "z": "ff1c050944a72acc",
+        "name": "Esta linea incializa una subscripcion al PLC para obtener la informacion por lectura",
+        "info": "",
+        "x": 330,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "a5eb0940a46b1097",
+        "type": "MSSQL",
+        "z": "ff1c050944a72acc",
+        "mssqlCN": "c348a9ce75afb6ad",
+        "name": "",
+        "outField": "payload",
+        "returnType": 0,
+        "throwErrors": 1,
+        "query": "",
+        "modeOpt": "queryMode",
+        "modeOptType": "query",
+        "queryOpt": "payload",
+        "queryOptType": "editor",
+        "paramsOpt": "queryParams",
+        "paramsOptType": "none",
+        "rows": "rows",
+        "rowsType": "msg",
+        "params": [],
+        "x": 680,
+        "y": 220,
+        "wires": [
+            [
+                "5603a2a5f35be087",
+                "b1e33c69d7d00431"
+            ]
+        ]
+    },
+    {
+        "id": "ba17b87dca9fb337",
+        "type": "http response",
+        "z": "ff1c050944a72acc",
+        "name": "Response success",
+        "statusCode": "200",
+        "headers": {
+            "content-type": "text/plain"
+        },
+        "x": 1190,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "5603a2a5f35be087",
+        "type": "function",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "func": "\nlet ajaxData = {\n    response: \"Data saved successfully\"\n};\n\nmsg.payload = ajaxData;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 860,
+        "y": 240,
+        "wires": [
+            [
+                "23728af8e717467f"
+            ]
+        ]
+    },
+    {
+        "id": "23728af8e717467f",
+        "type": "json",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": false,
+        "x": 1010,
+        "y": 240,
+        "wires": [
+            [
+                "ba17b87dca9fb337"
+            ]
+        ]
+    },
+    {
+        "id": "b3bae93fa7029e57",
+        "type": "catch",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "scope": [
+            "b740972afad9c80f",
+            "869d958163b240c4",
+            "acaf96d576829f6e"
+        ],
+        "uncaught": false,
+        "x": 90,
+        "y": 680,
+        "wires": [
+            [
+                "db113c2b778b0b16"
+            ]
+        ]
+    },
+    {
+        "id": "db113c2b778b0b16",
+        "type": "function",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "func": "\nmsg.statusCode = 500;\nmsg.payload = \"Ocurrio un error al obtener la información del PLC, contactar con soporte tecnico\"\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 240,
+        "y": 680,
+        "wires": [
+            [
+                "7e3a47e5d29eccc2"
+            ]
+        ]
+    },
+    {
+        "id": "3d9db0a1496265fa",
+        "type": "catch",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "scope": [
+            "a5eb0940a46b1097"
+        ],
+        "uncaught": false,
+        "x": 90,
+        "y": 640,
+        "wires": [
+            [
+                "017519014da74aad"
+            ]
+        ]
+    },
+    {
+        "id": "f5ef486746bb3c6d",
+        "type": "http response",
+        "z": "ff1c050944a72acc",
+        "name": "Response Error",
+        "statusCode": "",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "x": 560,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "017519014da74aad",
+        "type": "function",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "func": "\nmsg.statusCode = 500;\nmsg.payload = \"Ocurrio un error al guardar la información, contactar con soporte tecnico\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 240,
+        "y": 640,
+        "wires": [
+            [
+                "7e3a47e5d29eccc2"
+            ]
+        ]
+    },
+    {
+        "id": "7e3a47e5d29eccc2",
+        "type": "json",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": false,
+        "x": 390,
+        "y": 660,
+        "wires": [
+            [
+                "f5ef486746bb3c6d"
+            ]
+        ]
+    },
+    {
+        "id": "a366af329deef427",
+        "type": "http in",
+        "z": "ff1c050944a72acc",
+        "name": "Subscribe Data Tags",
+        "url": "/sbl_tags/subscribeTagData",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 460,
+        "wires": [
+            [
+                "42e9af99abe26b2e"
+            ]
+        ]
+    },
+    {
+        "id": "42e9af99abe26b2e",
+        "type": "function",
+        "z": "ff1c050944a72acc",
+        "name": "Subscribe Tags",
+        "func": "\nlet tagData = msg.payload.data;\n\nmsg.topic = tagData.tag + `;datatype=${tagData.type}`;\n\nmsg.topic = msg.topic.toString();\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 460,
+        "wires": [
+            [
+                "869d958163b240c4",
+                "e05794a03931e07e"
+            ]
+        ]
+    },
+    {
+        "id": "e28ce33fdfb06896",
+        "type": "http response",
+        "z": "ff1c050944a72acc",
+        "name": "Response success",
+        "statusCode": "",
+        "headers": {
+            "content-type": "text/plain"
+        },
+        "x": 850,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "e05794a03931e07e",
+        "type": "function",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "func": "\nlet ajaxData = {\n    \"response\": \"Tag Subscribed to the PLC\"\n};\n\nmsg.payload = ajaxData;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 460,
+        "wires": [
+            [
+                "9e0fec7360a7a737"
+            ]
+        ]
+    },
+    {
+        "id": "9e0fec7360a7a737",
+        "type": "json",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": false,
+        "x": 670,
+        "y": 460,
+        "wires": [
+            [
+                "e28ce33fdfb06896"
+            ]
+        ]
+    },
+    {
+        "id": "1c860b1abc6de769",
+        "type": "debug",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 750,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "95a03099beab5fd8",
+        "type": "switch",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "property": "insertData",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 510,
+        "y": 220,
+        "wires": [
+            [
+                "a5eb0940a46b1097"
+            ]
+        ]
+    },
+    {
+        "id": "c676fdfd01abf6b3",
+        "type": "http in",
+        "z": "ff1c050944a72acc",
+        "name": "Write Tags",
+        "url": "/sbl_tags/writeTags",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 340,
+        "wires": [
+            [
+                "d794659de4d3f112"
+            ]
+        ]
+    },
+    {
+        "id": "d794659de4d3f112",
+        "type": "function",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "func": "let msgList = []\nlet dataTags = msg.payload.tagsSBL;\n\nfor(let dt of dataTags){\n    msgList.push({payload:dt.value, topic:dt.tag+`;datatype=${dt.type}`, /*datatype:dt.type*/});\n}\n\nreturn [msgList];",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 340,
+        "wires": [
+            [
+                "acaf96d576829f6e"
+            ]
+        ]
+    },
+    {
+        "id": "acaf96d576829f6e",
+        "type": "OpcUa-Client",
+        "z": "ff1c050944a72acc",
+        "endpoint": "c4506100afe1f2fb",
+        "action": "write",
+        "deadbandtype": "a",
+        "deadbandvalue": 1,
+        "time": "1",
+        "timeUnit": "s",
+        "certificate": "n",
+        "localfile": "",
+        "localkeyfile": "",
+        "securitymode": "None",
+        "securitypolicy": "None",
+        "folderName4PKI": "",
+        "name": "OPC UA WRITE",
+        "x": 440,
+        "y": 340,
+        "wires": [
+            [
+                "29782adea92c2b3f"
+            ]
+        ]
+    },
+    {
+        "id": "f97fb7999cb6e93e",
+        "type": "http response",
+        "z": "ff1c050944a72acc",
+        "name": "Response success",
+        "statusCode": "200",
+        "headers": {
+            "content-type": "text/plain"
+        },
+        "x": 950,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "29782adea92c2b3f",
+        "type": "function",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "func": "let ajaxData = {\n    response: msg.payload\n};\n\nmsg.payload = ajaxData;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 620,
+        "y": 340,
+        "wires": [
+            [
+                "6c32e630a2ac8082"
+            ]
+        ]
+    },
+    {
+        "id": "6c32e630a2ac8082",
+        "type": "json",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": false,
+        "x": 770,
+        "y": 340,
+        "wires": [
+            [
+                "f97fb7999cb6e93e"
+            ]
+        ]
+    },
+    {
+        "id": "7bfd26d1c9ae32d5",
+        "type": "comment",
+        "z": "ff1c050944a72acc",
+        "name": "En esta linea se manda a escribir información en tags de el PLC",
+        "info": "",
+        "x": 270,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "b740972afad9c80f",
+        "type": "OpcUa-Client",
+        "z": "ff1c050944a72acc",
+        "endpoint": "c4506100afe1f2fb",
+        "action": "read",
+        "deadbandtype": "a",
+        "deadbandvalue": 1,
+        "time": "1",
+        "timeUnit": "s",
+        "certificate": "n",
+        "localfile": "",
+        "localkeyfile": "",
+        "securitymode": "None",
+        "securitypolicy": "None",
+        "folderName4PKI": "",
+        "name": "OPC UA READ",
+        "x": 660,
+        "y": 100,
+        "wires": [
+            [
+                "eda187174511f1fc"
+            ]
+        ]
+    },
+    {
+        "id": "b1e33c69d7d00431",
+        "type": "function",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "func": "\nlet typeTag = \"\";\n\nif(msg.group == 'oee'){\n    msg.topic = \"ns=3;s=[PLC_W10]FIFO_WC_OEE[0].Return;datatype=Int32\";\n}else{\n    msg.topic = \"ns=3;s=[PLC_W10]FIFO_WC_Event[0].Return;datatype=Int32\";\n}\n\nmsg.payload = 1;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 860,
+        "y": 200,
+        "wires": [
+            [
+                "b1361a6d111e13bd"
+            ]
+        ]
+    },
+    {
+        "id": "1e2e48b24cf81a03",
+        "type": "json",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "property": "payload.data",
+        "action": "",
+        "pretty": false,
+        "x": 290,
+        "y": 100,
+        "wires": [
+            [
+                "d0af80dd60d5fa03"
+            ]
+        ]
+    },
+    {
+        "id": "cdb5d7dc96597f90",
+        "type": "OpcUa-Client",
+        "z": "ff1c050944a72acc",
+        "endpoint": "c4506100afe1f2fb",
+        "action": "subscribe",
+        "deadbandtype": "a",
+        "deadbandvalue": 1,
+        "time": "1",
+        "timeUnit": "s",
+        "certificate": "n",
+        "localfile": "",
+        "localkeyfile": "",
+        "securitymode": "None",
+        "securitypolicy": "None",
+        "folderName4PKI": "",
+        "name": "OPC UA SERVER",
+        "x": 470,
+        "y": 860,
+        "wires": [
+            [
+                "8cef782aa529493c"
+            ]
+        ]
+    },
+    {
+        "id": "e9d2ce2e60151ac3",
+        "type": "inject",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 90,
+        "y": 860,
+        "wires": [
+            [
+                "873ab41ebb95c3b4"
+            ]
+        ]
+    },
+    {
+        "id": "8cef782aa529493c",
+        "type": "debug",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "873ab41ebb95c3b4",
+        "type": "function",
+        "z": "ff1c050944a72acc",
+        "name": "Subscribe Tags",
+        "func": "\nmsg.topic = \"ns=3;s=[PLC_W10]BD_Entradas_OEE.Run[2];datatype=Int32\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 860,
+        "wires": [
+            [
+                "cdb5d7dc96597f90"
+            ]
+        ]
+    },
+    {
+        "id": "c3287f04284903b1",
+        "type": "OpcUa-Client",
+        "z": "ff1c050944a72acc",
+        "endpoint": "c4506100afe1f2fb",
+        "action": "write",
+        "deadbandtype": "a",
+        "deadbandvalue": 1,
+        "time": "1",
+        "timeUnit": "s",
+        "certificate": "n",
+        "localfile": "",
+        "localkeyfile": "",
+        "securitymode": "None",
+        "securitypolicy": "None",
+        "folderName4PKI": "",
+        "name": "OPC UA WRITE",
+        "x": 460,
+        "y": 900,
+        "wires": [
+            [
+                "fbc4e108fdb602cb"
+            ]
+        ]
+    },
+    {
+        "id": "fbc4e108fdb602cb",
+        "type": "debug",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "dcd4b1d87d61132f",
+        "type": "inject",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 90,
+        "y": 900,
+        "wires": [
+            [
+                "da617507e7514e16"
+            ]
+        ]
+    },
+    {
+        "id": "da617507e7514e16",
+        "type": "function",
+        "z": "ff1c050944a72acc",
+        "name": "Write Tags",
+        "func": "\nmsg.topic = \"ns=3;s=[PLC_W10]BD_Entradas_OEE.Ready[2];datatype=Int32\";\nmsg.payload = 1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 900,
+        "wires": [
+            [
+                "c3287f04284903b1"
+            ]
+        ]
+    },
+    {
+        "id": "a96d757ed1aa0a1c",
+        "type": "OpcUa-Client",
+        "z": "ff1c050944a72acc",
+        "endpoint": "c4506100afe1f2fb",
+        "action": "read",
+        "deadbandtype": "a",
+        "deadbandvalue": 1,
+        "time": "1",
+        "timeUnit": "s",
+        "certificate": "n",
+        "localfile": "",
+        "localkeyfile": "",
+        "securitymode": "None",
+        "securitypolicy": "None",
+        "folderName4PKI": "",
+        "name": "OPC UA READ",
+        "x": 460,
+        "y": 940,
+        "wires": [
+            [
+                "ca919ee08a90b750"
+            ]
+        ]
+    },
+    {
+        "id": "f34d3a87ccf6f568",
+        "type": "inject",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 90,
+        "y": 940,
+        "wires": [
+            [
+                "2ad677b33dada088"
+            ]
+        ]
+    },
+    {
+        "id": "2ad677b33dada088",
+        "type": "function",
+        "z": "ff1c050944a72acc",
+        "name": "Read Tags",
+        "func": "\nmsg.topic = \"ns=3;s=[PLC_W10]FIFO_WC_Event[0].Return;datatype=Int32\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 940,
+        "wires": [
+            [
+                "a96d757ed1aa0a1c"
+            ]
+        ]
+    },
+    {
+        "id": "ca919ee08a90b750",
+        "type": "debug",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 940,
+        "wires": []
+    },
+    {
+        "id": "8a1197d1b8ddf561",
+        "type": "catch",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "scope": [
+            "2680b15038a6f485",
+            "f97fb7999cb6e93e"
+        ],
+        "uncaught": false,
+        "x": 90,
+        "y": 720,
+        "wires": [
+            [
+                "fb4ad0dad6d3857d"
+            ]
+        ]
+    },
+    {
+        "id": "fb4ad0dad6d3857d",
+        "type": "debug",
+        "z": "ff1c050944a72acc",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "error",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 240,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "b1361a6d111e13bd",
+        "type": "OpcUa-Client",
+        "z": "ff1c050944a72acc",
+        "endpoint": "c4506100afe1f2fb",
+        "action": "write",
+        "deadbandtype": "a",
+        "deadbandvalue": 1,
+        "time": "1",
+        "timeUnit": "s",
+        "certificate": "n",
+        "localfile": "",
+        "localkeyfile": "",
+        "securitymode": "None",
+        "securitypolicy": "None",
+        "folderName4PKI": "",
+        "name": "OPC UA WRITE",
+        "x": 1040,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4f5035b1f3f5f9e9",
+        "type": "comment",
+        "z": "ff1c050944a72acc",
+        "name": "Manejo de catchs",
+        "info": "",
+        "x": 120,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "d26a9ebd6e115524",
+        "type": "comment",
+        "z": "ff1c050944a72acc",
+        "name": "Nodos para inyeccion directa",
+        "info": "",
+        "x": 160,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "c4506100afe1f2fb",
+        "type": "OpcUa-Endpoint",
+        "endpoint": "opc.tcp://DESKTOP-2922AB8:4990/FactoryTalkLinxGateway1",
+        "secpol": "None",
+        "secmode": "None",
+        "none": false,
+        "login": false,
+        "usercert": false,
+        "usercertificate": "",
+        "userprivatekey": ""
+    },
+    {
+        "id": "c348a9ce75afb6ad",
+        "type": "MSSQL-CN",
+        "tdsVersion": "7_4",
+        "name": "SBL_TEST",
+        "server": "localhost",
+        "port": "1433",
+        "encyption": false,
+        "trustServerCertificate": false,
+        "database": "sbl_honda",
+        "useUTC": true,
+        "connectTimeout": "15000",
+        "requestTimeout": "15000",
+        "cancelTimeout": "5000",
+        "pool": "5",
+        "parseJSON": false,
+        "enableArithAbort": true
+    }
+]

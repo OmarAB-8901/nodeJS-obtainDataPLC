@@ -1,0 +1,245 @@
+[
+    {
+        "id": "fd0e0289b7925939",
+        "type": "tab",
+        "label": "SBL Telegram Messages",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "9f692ec6e5d1d643",
+        "type": "telegram sender",
+        "z": "fd0e0289b7925939",
+        "name": "",
+        "bot": "1d6eb3c433679ec8",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 1030,
+        "y": 160,
+        "wires": [
+            [
+                "6252b168548c52a8"
+            ]
+        ]
+    },
+    {
+        "id": "59ee9ca298c9207f",
+        "type": "http in",
+        "z": "fd0e0289b7925939",
+        "name": "Send Message",
+        "url": "sbl/sendTelegramMessage",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 200,
+        "y": 160,
+        "wires": [
+            [
+                "50878d25e4f17d1b",
+                "8263e628d9cf329e"
+            ]
+        ]
+    },
+    {
+        "id": "6252b168548c52a8",
+        "type": "function",
+        "z": "fd0e0289b7925939",
+        "name": "",
+        "func": "\n// msg.payload = {\n//     response: \"Se ha enviado el mensaje correctamente\"\n// };\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1220,
+        "y": 160,
+        "wires": [
+            [
+                "ad761a0be962309f"
+            ]
+        ]
+    },
+    {
+        "id": "ad761a0be962309f",
+        "type": "http response",
+        "z": "fd0e0289b7925939",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1380,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "cbc1afd4befcaf0f",
+        "type": "function",
+        "z": "fd0e0289b7925939",
+        "name": "Create Message to Send",
+        "func": "\nlet data = msg.payload;\n\nlet messageJSON = {};\nmessageJSON['chatId'] = data.telegramId;\nmessageJSON['type'] = \"message\";\nmessageJSON['content'] = msg.dbMensaje == true ? data.message : msg.mensaje;\n\nmsg.payload = messageJSON;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 790,
+        "y": 160,
+        "wires": [
+            [
+                "9f692ec6e5d1d643"
+            ]
+        ]
+    },
+    {
+        "id": "50878d25e4f17d1b",
+        "type": "function",
+        "z": "fd0e0289b7925939",
+        "name": "",
+        "func": "\nlet data = msg.payload;\n\nlet query = \"SELECT\";\nquery += \" gt.telegramId, gt.messsage\";\nquery += \" FROM groupsTelegram gt\";\nquery += \" INNER JOIN orgcharts oc ON gt.orgchartid = oc.id\";\nquery += \" INNER JOIN groups g ON oc.idgroup = g.id\";\nquery += ` WHERE g.id = ${data.idGroup} AND oc.id = ${data.idChart} AND gt.idShift = ${data.idShift}`;\n\nmsg.dbMensaje = data.dbMensaje;\nmsg.mensaje = data.mensaje;\n\nmsg.payload = query;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 160,
+        "wires": [
+            [
+                "58f315437f7a523a"
+            ]
+        ]
+    },
+    {
+        "id": "58f315437f7a523a",
+        "type": "MSSQL",
+        "z": "fd0e0289b7925939",
+        "mssqlCN": "7f8318c6973951a5",
+        "name": "",
+        "outField": "payload",
+        "returnType": 0,
+        "throwErrors": 1,
+        "query": "",
+        "modeOpt": "queryMode",
+        "modeOptType": "query",
+        "queryOpt": "payload",
+        "queryOptType": "editor",
+        "paramsOpt": "queryParams",
+        "paramsOptType": "none",
+        "rows": "rows",
+        "rowsType": "msg",
+        "params": [],
+        "x": 560,
+        "y": 160,
+        "wires": [
+            [
+                "cbc1afd4befcaf0f"
+            ]
+        ]
+    },
+    {
+        "id": "3d062fb4aa7383ef",
+        "type": "inject",
+        "z": "fd0e0289b7925939",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"idGroup\":1,\"idChart\":1,\"dbMensaje\":false,\"mensaje\":\"Este mensaje no viene de la base de datos, se mando de una funcion en NODE RED\"}",
+        "payloadType": "json",
+        "x": 230,
+        "y": 120,
+        "wires": [
+            [
+                "50878d25e4f17d1b"
+            ]
+        ]
+    },
+    {
+        "id": "8263e628d9cf329e",
+        "type": "function",
+        "z": "fd0e0289b7925939",
+        "name": "Create Message to Send",
+        "func": "\nlet groupToSend = msg.payload.grupo;\n\nlet messageJSON = {};\nmessageJSON['chatId'].push(5579491416);\nmessageJSON['type'] = \"message\";\nmessageJSON['content'] = \"Mensaje enviado por NODE RED Devicor\";\n\nmsg.payload = messageJSON;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 200,
+        "wires": [
+            [
+                "3bafd2a09561fc71"
+            ]
+        ]
+    },
+    {
+        "id": "3bafd2a09561fc71",
+        "type": "function",
+        "z": "fd0e0289b7925939",
+        "name": "",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 200,
+        "wires": [
+            [
+                "9f692ec6e5d1d643"
+            ]
+        ]
+    },
+    {
+        "id": "1d6eb3c433679ec8",
+        "type": "telegram bot",
+        "botname": "sbl_bot",
+        "usernames": "",
+        "chatids": "-850873959,5579491416,5543734669",
+        "baseapiurl": "",
+        "updatemode": "none",
+        "pollinterval": "300",
+        "usesocks": false,
+        "sockshost": "",
+        "socksprotocol": "socks5",
+        "socksport": "6667",
+        "socksusername": "anonymous",
+        "sockspassword": "",
+        "bothost": "",
+        "botpath": "",
+        "localbotport": "8443",
+        "publicbotport": "8443",
+        "privatekey": "",
+        "certificate": "",
+        "useselfsignedcertificate": false,
+        "sslterminated": false,
+        "verboselogging": false
+    },
+    {
+        "id": "7f8318c6973951a5",
+        "type": "MSSQL-CN",
+        "tdsVersion": "7_4",
+        "name": "GT3_project",
+        "server": "localhost",
+        "port": "1433",
+        "encyption": true,
+        "trustServerCertificate": true,
+        "database": "gt3s_test",
+        "useUTC": true,
+        "connectTimeout": "15000",
+        "requestTimeout": "15000",
+        "cancelTimeout": "5000",
+        "pool": "5",
+        "parseJSON": false,
+        "enableArithAbort": true
+    }
+]
