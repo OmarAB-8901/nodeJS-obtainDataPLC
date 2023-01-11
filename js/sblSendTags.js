@@ -106,7 +106,7 @@ setInterval(async () => {
         await obtainAndSaveData(tagsSBL[t][ta], t);
     }
   }
-}, 2100);
+}, 2200);
 
 setInterval(async () => {
 
