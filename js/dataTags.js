@@ -25,16 +25,17 @@ for(let i=1; i<=totLines; i++){
 
 export default {
 	events: [
-		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_Event[0].IdEvento", type: "Int32"},
+		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_Event[0].Read", type: "Bool"},
+		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_Event[0].IdEvento", type: "Int31"},
 		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_Event[0].IdMachine", type: "String"},
 		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_Event[0].Starttime", type: "String"},
 		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_Event[0].Endtime", type: "String"},
 		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_Event[0].Type", type: "Int32"},
 		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_Event[0].Description", type: "String"},
 		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_Event[0].Duration", type: "Int32"},
-		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_Event[0].Read", type: "Bool"}
 	],
-	oee: [ 
+	oee: [
+		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_OEE[0].Read", type: "Bool"},
 		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_OEE[0].Idmachine", type: "Int32"},
 		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_OEE[0].Dttimecaptura", type: "String"},
 		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_OEE[0].OEE", type: "Float"},
@@ -48,8 +49,7 @@ export default {
 		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_OEE[0].GoodParts", type: "Int32"},
 		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_OEE[0].LoteId", type: "String"},
 		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_OEE[0].ParteId", type: "String"},
-		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_OEE[0].ShiftId", type: "Float"},
-		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_OEE[0].Read", type: "Bool"}
+		{tag: "ns=3;s=[PLC_ANDON]FIFO_WC_OEE[0].ShiftId", type: "Float"}
 	],
 	analogicas:{},
 	bd_entradas: bdEntradasTags,
