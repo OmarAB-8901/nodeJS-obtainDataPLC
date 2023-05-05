@@ -27,7 +27,7 @@ async function subscribeDataTags(tagData, n = 0) {
       headers: { "content-type": "application/json; charset=utf-8" }
     };
     
-    await fetch(urlPLC + "sbl_tags/subscribeTagData", headers);
+    await fetch(urlPLC + "sbl_tags/subscribeTagData", headers).then(response => response.json()).then(data => data).catch(error => console.error(error));
 
     return subscribeDataTags(tagData, n + 1);
   } catch (error) {
@@ -99,7 +99,7 @@ setInterval(async () => {
       
       readTagSaveData = await readDataTags( [tagsSBL[t][0]] );
 
-      if(readTagSaveData.data){
+      if(readTagSaveData[0]){
 
         let dataReaded = await readDataTags(tagsSBL[t]);
         await sendDataToDB(dataReaded, t);
